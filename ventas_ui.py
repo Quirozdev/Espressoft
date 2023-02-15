@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(782, 565)
+        MainWindow.resize(782, 571)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -146,34 +146,34 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         spacerItem10 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem10)
-        self.boton_ventas_totales_diarias_2 = QtWidgets.QPushButton(self.opciones_ventas_individuales)
-        self.boton_ventas_totales_diarias_2.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.boton_ventas_totales_diarias_2.setAutoFillBackground(False)
-        self.boton_ventas_totales_diarias_2.setStyleSheet("color: rgb(255, 255, 255);\n"
+        self.boton_ventas_individuales_diarias = QtWidgets.QPushButton(self.opciones_ventas_individuales)
+        self.boton_ventas_individuales_diarias.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.boton_ventas_individuales_diarias.setAutoFillBackground(False)
+        self.boton_ventas_individuales_diarias.setStyleSheet("color: rgb(255, 255, 255);\n"
 "font: 75 12pt \"Times New Roman\";\n"
 "border: none;")
-        self.boton_ventas_totales_diarias_2.setObjectName("boton_ventas_totales_diarias_2")
-        self.verticalLayout_5.addWidget(self.boton_ventas_totales_diarias_2, 0, QtCore.Qt.AlignRight)
+        self.boton_ventas_individuales_diarias.setObjectName("boton_ventas_individuales_diarias")
+        self.verticalLayout_5.addWidget(self.boton_ventas_individuales_diarias, 0, QtCore.Qt.AlignRight)
         spacerItem11 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem11)
-        self.boton_ventas_totales_mensuales_2 = QtWidgets.QPushButton(self.opciones_ventas_individuales)
-        self.boton_ventas_totales_mensuales_2.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.boton_ventas_totales_mensuales_2.setAutoFillBackground(False)
-        self.boton_ventas_totales_mensuales_2.setStyleSheet("color: rgb(255, 255, 255);\n"
+        self.boton_ventas_individuales_mensuales = QtWidgets.QPushButton(self.opciones_ventas_individuales)
+        self.boton_ventas_individuales_mensuales.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.boton_ventas_individuales_mensuales.setAutoFillBackground(False)
+        self.boton_ventas_individuales_mensuales.setStyleSheet("color: rgb(255, 255, 255);\n"
 "font: 75 12pt \"Times New Roman\";\n"
 "border: none;")
-        self.boton_ventas_totales_mensuales_2.setObjectName("boton_ventas_totales_mensuales_2")
-        self.verticalLayout_5.addWidget(self.boton_ventas_totales_mensuales_2, 0, QtCore.Qt.AlignRight)
+        self.boton_ventas_individuales_mensuales.setObjectName("boton_ventas_individuales_mensuales")
+        self.verticalLayout_5.addWidget(self.boton_ventas_individuales_mensuales, 0, QtCore.Qt.AlignRight)
         spacerItem12 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem12)
-        self.boton_ventas_totales_anuales_2 = QtWidgets.QPushButton(self.opciones_ventas_individuales)
-        self.boton_ventas_totales_anuales_2.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.boton_ventas_totales_anuales_2.setAutoFillBackground(False)
-        self.boton_ventas_totales_anuales_2.setStyleSheet("color: rgb(255, 255, 255);\n"
+        self.boton_ventas_individuales_anuales = QtWidgets.QPushButton(self.opciones_ventas_individuales)
+        self.boton_ventas_individuales_anuales.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.boton_ventas_individuales_anuales.setAutoFillBackground(False)
+        self.boton_ventas_individuales_anuales.setStyleSheet("color: rgb(255, 255, 255);\n"
 "font: 75 12pt \"Times New Roman\";\n"
 "border: none;")
-        self.boton_ventas_totales_anuales_2.setObjectName("boton_ventas_totales_anuales_2")
-        self.verticalLayout_5.addWidget(self.boton_ventas_totales_anuales_2, 0, QtCore.Qt.AlignRight)
+        self.boton_ventas_individuales_anuales.setObjectName("boton_ventas_individuales_anuales")
+        self.verticalLayout_5.addWidget(self.boton_ventas_individuales_anuales, 0, QtCore.Qt.AlignRight)
         spacerItem13 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem13)
         self.horizontalLayout_8.addLayout(self.verticalLayout_5)
@@ -181,7 +181,7 @@ class Ui_MainWindow(object):
         spacerItem14 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem14)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_5.setContentsMargins(4, -1, 4, -1)
+        self.horizontalLayout_5.setContentsMargins(0, -1, 4, -1)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.boton_empleados = QtWidgets.QPushButton(self.menu_lateral)
         self.boton_empleados.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -198,7 +198,7 @@ class Ui_MainWindow(object):
         spacerItem16 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem16)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setContentsMargins(4, -1, 4, -1)
+        self.horizontalLayout_6.setContentsMargins(0, -1, 4, -1)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.boton_cerrar = QtWidgets.QPushButton(self.menu_lateral)
         self.boton_cerrar.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -237,7 +237,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -248,9 +248,9 @@ class Ui_MainWindow(object):
         self.boton_ventas_totales_mensuales.setText(_translate("MainWindow", "Ventas mensuales"))
         self.boton_ventas_totales_anuales.setText(_translate("MainWindow", "Ventas anuales"))
         self.boton_ventas_individuales.setText(_translate("MainWindow", "Ventas individuales"))
-        self.boton_ventas_totales_diarias_2.setText(_translate("MainWindow", "Ventas diarias"))
-        self.boton_ventas_totales_mensuales_2.setText(_translate("MainWindow", "Ventas mensuales"))
-        self.boton_ventas_totales_anuales_2.setText(_translate("MainWindow", "Ventas anuales"))
+        self.boton_ventas_individuales_diarias.setText(_translate("MainWindow", "Ventas diarias"))
+        self.boton_ventas_individuales_mensuales.setText(_translate("MainWindow", "Ventas mensuales"))
+        self.boton_ventas_individuales_anuales.setText(_translate("MainWindow", "Ventas anuales"))
         self.boton_empleados.setText(_translate("MainWindow", "Empleados"))
         self.boton_cerrar.setText(_translate("MainWindow", "Cerrar"))
 

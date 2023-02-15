@@ -64,6 +64,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # el boton para cerrar la aplicacion
         self.boton_cerrar.clicked.connect(self.cerrar)
 
+        # a los botones que son desplegados por sus botones desplegables "padres", se les asigna un mismo evento en comun
+        # Un boton desplegable padre seria Ventas totales, mientras que sus botones desplegados serian Ventas diarias, mensuales y anuales, 
+        # asi como para el boton desplegable padre Ventas individuales
+        botones_desplegados_totales =  [self.boton_ventas_totales_diarias, self.boton_ventas_totales_mensuales, self.boton_ventas_totales_anuales]
+        self.agregar_evento_estilizar_seleccion_a_botones_desplegados(botones_desplegados_totales)
+
+        botones_desplegados_individuales = [self.boton_ventas_individuales_diarias, self.boton_ventas_individuales_mensuales, self.boton_ventas_individuales_anuales]
+        self.agregar_evento_estilizar_seleccion_a_botones_desplegados(botones_desplegados_individuales)
+
+        # esta lista va a ser util para saber que botones pueden tener un borde izquierdo al ser presionados ellos o alguno de sus botones desplegados hijos
+        self.botones_con_posible_borde_izquierdo = [self.boton_ventas_totales, self.boton_ventas_individuales, self.boton_empleados]
+        # a los botones de esta lista ya se les habia agregado un evento, sin embargo es posible agregar mas de un evento
+        # a los botones, en este caso se les va a agregar el evento de quitar negritas a los botones desplegados hijos, cuando
+        # sean presionados
+        for boton in self.botones_con_posible_borde_izquierdo:
+            # se le pasa un None para que al momento de evaluar, este metodo le quite las negritas a todos los botones
+            # desplegados hijos y no deje a alguno en negritas.
+            boton.clicked.connect(lambda: self.quitar_negritas_a_otros_botones(None))
+
+
+        # este diccionario va a guardar la relacion entre los botones desplegables padre (Ventas totales y Ventas individuales) y sus
+        # botones desplegados hijos (Ventas diarias, Ventas mensuales y Ventas anuales)
+        # tiene la estructura: {boton_desplegable_padre_1: [boton_desplegado_hijo_1, boton_desplegado_hijo2, ...], boton_desplegable_padre_2: [...]}
+        self.diccionario_relacion_botones_desplegables_y_desplegados = {
+            self.boton_ventas_totales: botones_desplegados_totales,
+            self.boton_ventas_individuales: botones_desplegados_individuales
+        }
+
+
+
+
 
     def ocultar_mostrar_opciones(self, boton_texto, boton_desplegable_correspondiente, widget_opciones):
         """
@@ -114,13 +145,73 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Quita el borde izquierdo a los botones que no sean el ultimo boton_presionado.
         Recibe como parametro el boton_presionado, el cual es el unico que va a mantener el borde izquierdo
         """
-        # se le quite el borde izquierdo a todos los botones que puedan tener borde izquierdo
-        self.agregar_quitar_borde_izquierdo_boton(self.boton_ventas_totales, False)
-        self.agregar_quitar_borde_izquierdo_boton(self.boton_ventas_individuales, False)
-        self.agregar_quitar_borde_izquierdo_boton(self.boton_empleados, False)
-        # se restaura el borde izquierdo unicamente al ultimo boton presionado desplegable
-        # no se vuelve a usar el metodo .agregar_quitar_borde_izquierdo_boton() por que se haria un ciclo recursivo infinito
-        boton_presionado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'border-left: 3px solid white;' 'padding: 10px;' 'background-color: rgb(65, 107, 191);')
+        for boton in self.botones_con_posible_borde_izquierdo:
+            if boton is not boton_presionado:
+                # se le quita el borde izquierdo a todos los botones que puedan tener borde izquierdo y que no son el boton_presionado
+                self.agregar_quitar_borde_izquierdo_boton(boton, False)
+
+    
+    def agregar_evento_estilizar_seleccion_a_botones_desplegados(self, botones_desplegados):
+        """
+        Agrega el evento/metodo estilizar_seleccion() a una lista de botones desplegados.
+        Recibe como parametro una lista de botones desplegados pertenecientes a un boton desplegable padre.
+        """
+        # mediante la referencia del objeto se asignan los eventos
+        for boton in botones_desplegados:
+            boton.clicked.connect(self.estilizar_seleccion)
+
+        
+    def obtener_boton_desplegable_padre(self, boton_desplegado):
+        """
+        Regresa al boton desplegable padre, dado un boton_desplegado hijo.
+        """
+        # se recorren los elementos del diccionario que tiene la relacion entre los botones desplegables padre y los botones desplegados hijos.
+        # donde la llave es boton_desplegable_padre y su valor es una lista "botones_desplegados_hijos".
+        for boton_desplegable_padre, botones_desplegados_hijos in self.diccionario_relacion_botones_desplegables_y_desplegados.items():
+            # si el boton desplegado hijo se encuentra entre los hijos del boton desplegable padre, entonces se regresa al boton desplegable padre
+            if boton_desplegado in botones_desplegados_hijos:
+                #print(boton_desplegable_padre.text())
+                #print(boton_desplegado.text())
+                return boton_desplegable_padre
+
+
+
+    def estilizar_seleccion(self):
+        """
+        Pone en negritas al boton desplegado hijo de un boton desplegable padre, quitandole esta propiedad a los
+        otros botones desplegados hijos y agregandole el borde izquierdo al boton desplegable padre correspondiente.
+        """
+        # self.sender() representa al widget que mando la señal (signal), en este caso seran
+        # los botones desplegados
+        # print(self.sender().text())
+        # con self.sender() se puede saber que boton es el que fue presionado y llamó a este evento
+        boton_desplegado_seleccionado = self.sender()
+        # se le quita las negritas al texto de los botones que no sean el boton desplegado seleccionado
+        self.quitar_negritas_a_otros_botones(boton_desplegado_seleccionado)
+
+        # se pone en negritas (bold) el texto del boton desplegado seleccionado
+        boton_desplegado_seleccionado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'font-weight: bold;')
+
+        # se obtiene al boton desplegable padre del boton desplegado seleccionado
+        boton_desplegable_padre = self.obtener_boton_desplegable_padre(boton_desplegado_seleccionado)
+        # al boton desplegable padre se le agrega el borde izquierdo, mientras que a los otros se les quita 
+        self.agregar_quitar_borde_izquierdo_boton(boton_desplegable_padre, True)
+
+
+    def quitar_negritas_a_otros_botones(self, boton_desplegado_seleccionado):
+        """
+        Quita el atributo font-weight: bold; de una lista de botones desplegados que no sean el boton desplegado seleccionado que se recibe como parametro.
+        """
+        # se obtienen las listas de botones desplegados del diccionario de relacion entre los botones desplegables padre y los botones desplegados hijos.
+        listas_botones_desplegados = self.diccionario_relacion_botones_desplegables_y_desplegados.values()
+        # por cada lista en las listas de botones desplegados
+        for lista_botones_desplegados in listas_botones_desplegados:
+            for boton_desplegado in lista_botones_desplegados:
+                # si el boton desplegado no es el boton desplegado seleccionado.
+                # aqui es importante usar el is y no el ==, porque el primero checa por referencia, mientras que el segundo checa por valor
+                if boton_desplegado is not boton_desplegado_seleccionado:
+                    # se les quita el font-weight
+                    boton_desplegado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;')
 
     
     def cerrar(self):
