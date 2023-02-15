@@ -57,8 +57,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.boton_ventas_individuales.clicked.connect(lambda: self.ocultar_mostrar_opciones(self.boton_ventas_individuales, self.boton_ventas_individuales_desplegable, self.opciones_ventas_individuales))
         self.boton_ventas_individuales_desplegable.clicked.connect(lambda: self.ocultar_mostrar_opciones(self.boton_ventas_individuales, self.boton_ventas_individuales_desplegable, self.opciones_ventas_individuales))
 
+        # el boton de empleados no es un boton desplegable, por lo que solo se le asocia el metodo agregar_quitar_borde_izquierdo_boton() el cual al
+        # presionarse simplemente se le agrega el borde izquierdo
+        self.boton_empleados.clicked.connect(lambda: self.agregar_quitar_borde_izquierdo_boton(self.boton_empleados, True))
 
-        self.boton_empleados.clicked.connect(lambda: self.agregar_borde_izquierdo_boton(self.boton_empleados, True))
+        # el boton para cerrar la aplicacion
+        self.boton_cerrar.clicked.connect(self.cerrar)
 
 
     def ocultar_mostrar_opciones(self, boton_texto, boton_desplegable_correspondiente, widget_opciones):
@@ -91,18 +95,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def agregar_quitar_borde_izquierdo_boton(self, boton, agregar: bool):
+        """
+        Agrega o quita el borde izquierdo (es de color blanco como en el disenio) de un boton determinado.
+        Recibe como parametros el boton a agregar o quitar borde izquierdo y un booleano agregar, que si es True, entonces se agrega, en caso contrario se quita
+        """
         if agregar:
+            # se modifica la hoja de estilos del boton, manteniendo los atributos que ya tenia y agregandole la propiedad border-left
             boton.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'border-left: 3px solid white;' 'padding: 10px;' 'background-color: rgb(65, 107, 191);')
+            # se le quita el borde izquierdo a los demas botones
             self.quitar_borde_izquierdo_a_otros_botones(boton)
         else:
+            # se le quita la propiedad border-left
             boton.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'padding: 10px;') 
 
 
     def quitar_borde_izquierdo_a_otros_botones(self, boton_presionado):
-        self.boton_ventas_totales.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'padding: 10px;')
-        self.boton_ventas_individuales.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'padding: 10px;') 
-        self.boton_empleados.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'padding: 10px;') 
+        """
+        Quita el borde izquierdo a los botones que no sean el ultimo boton_presionado.
+        Recibe como parametro el boton_presionado, el cual es el unico que va a mantener el borde izquierdo
+        """
+        # se le quite el borde izquierdo a todos los botones que puedan tener borde izquierdo
+        self.agregar_quitar_borde_izquierdo_boton(self.boton_ventas_totales, False)
+        self.agregar_quitar_borde_izquierdo_boton(self.boton_ventas_individuales, False)
+        self.agregar_quitar_borde_izquierdo_boton(self.boton_empleados, False)
+        # se restaura el borde izquierdo unicamente al ultimo boton presionado desplegable
+        # no se vuelve a usar el metodo .agregar_quitar_borde_izquierdo_boton() por que se haria un ciclo recursivo infinito
         boton_presionado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'border-left: 3px solid white;' 'padding: 10px;' 'background-color: rgb(65, 107, 191);')
+
+    
+    def cerrar(self):
+        """
+        Cierra la aplicacion.
+        """
+        self.close()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
