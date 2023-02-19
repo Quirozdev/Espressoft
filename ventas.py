@@ -5,12 +5,19 @@
 # Ejemplo (usando rutas relativas):
 # pyuic5 -x ventas.ui -o ventas_ui.py
 from ventas_ui import *
+import pyqtgraph as pg
+import random
+from controlador_grafica_ventas import *
 
 # se crea una clase que representa a la ventana principal, la cual hereda de la clase general del widget QMainWindows
 # y tambien hereda de la clase que se genera automaticamente para la ui de la ventana principal (MainWindows)
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
+        
+        # con esto se agregan las fuentes custom para que se puedan usar aqui en los stylesheets con CSS
+        QtGui.QFontDatabase.addApplicationFont('resources/fonts/Montserrat-Regular.ttf')
+
         # setupUi genera la interfaz con todos los componentes hechos en QT Designer, se le pasa self
         # como el propio objeto de MainWindow
         self.setupUi(self)
@@ -21,7 +28,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # el nombre que se le haya dado al componente en QT Designer, es el nombre que se utiliza para acceder 
         # a ese componente aqui, como atributo del objeto que lo contiene (MainWindow)
         # Ejemplo: Si en QT Designer a un boton se le puso el nombre "opciones_ventas_totales", para acceder
-        # a ese componente desde aqui, se usaria algo como "self_opciones_ventas_totales" y con eso se puede
+        # a ese componente desde aqui, se usaria algo como "self.opciones_ventas_totales" y con eso se puede
         # operar con el componente, como agregarle eventos o personalizarlo
 
        
@@ -34,6 +41,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.opciones_ventas_totales.setHidden(True)
 
         self.opciones_ventas_individuales.setHidden(True)
+
+        # el stacked widget es como un componente que permite tener varias paginas en el mismo lugar
+        # de este modo las paginas de cada una de las opciones como ventas totales diarias, mensuales, empleados...
+        # pertenecen al stacked widget y estas se cambian cuando se presiona el boton de su opcion correspondiente
+        # al principio va a aparecer una "pagina" por defecto cuando no se ha seleccionado ninguna opcion
+        self.stacked_widget_paginas.setCurrentWidget(self.pagina_por_defecto)
 
         """
         EVENTOS: PRESIONAR UN BOTON
@@ -93,7 +106,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         }
 
 
+        # este diccionario va a guardar la relacion entre el boton de opciones seleccionado en el menu lateral
+        # y su pagina correspondiente en el stacked widget
+        self.relacion_botones_opciones_y_su_pagina_correspondiente = {
+            self.boton_ventas_totales_diarias: self.pagina_ventas_totales_diarias,
+            self.boton_ventas_totales_mensuales: self.pagina_ventas_totales_mensuales,
+            self.boton_ventas_totales_anuales: self.pagina_ventas_totales_anuales,
+            self.boton_ventas_individuales_diarias: self.pagina_ventas_individuales_diarias,
+            self.boton_ventas_individuales_mensuales: self.pagina_ventas_individuales_mensuales,
+            self.boton_ventas_individuales_anuales: self.pagina_ventas_individuales_anuales,
+            self.boton_empleados: self.pagina_empleados
+        }
+        
+        # a los botones de opciones que eran las llaves del diccionario relacion_botones_opciones_y_su_pagina_correspondiente,
+        # se les agrega el eventp de cambiar la pagina en el stacked widget correspondiente al boton seleccionado
+        for boton_opcion in self.relacion_botones_opciones_y_su_pagina_correspondiente:
+            boton_opcion.clicked.connect(self.cambiar_pagina_al_seleccionar_opcion)
 
+
+
+        """
+        Esto es solo para probar la grafica, se debe de quitar o cambiar
+        """
+        
+        estilizar_grafica(self.grafica_ventas_totales_diarias, "Ventas totales")
+        
+        asignar_valores_de_tipo_string_eje_x(self.grafica_ventas_totales_diarias, ['3:00 pm - 4:00 pm', '4:00 pm - 5:00 pm', '5:00 pm - 6:00 pm', '6:00 pm - 7:00 pm', '7:00 pm - 8:00 pm', '8:00 pm - 9:00 pm'])
+        
+        x = [1, 2, 3, 4, 5, 6]
+
+        self.boton_generar_ventas_totales_diarias.clicked.connect(lambda: dibujar_grafica(self.grafica_ventas_totales_diarias, x, generar_datos_aleatorios_para_probar(x)))
 
 
     def ocultar_mostrar_opciones(self, boton_texto, boton_desplegable_correspondiente, widget_opciones):
@@ -132,12 +174,39 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         if agregar:
             # se modifica la hoja de estilos del boton, manteniendo los atributos que ya tenia y agregandole la propiedad border-left
-            boton.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'border-left: 3px solid white;' 'padding: 10px;' 'background-color: rgb(65, 107, 191);')
+            # ademas se pone en negritas al boton desplegable padre (font-weight: bold;)
+            boton.setStyleSheet(
+                """
+                QPushButton {
+                    color: rgb(255, 255, 255);
+                    font-family: 'Montserrat';
+                    font-style: normal;
+                    font-weight: bold;
+                    font-size: 16px;
+                    border: none;
+                    padding: 10px;
+                    border-left: 3px solid white;
+                }
+            """
+            )
             # se le quita el borde izquierdo a los demas botones
             self.quitar_borde_izquierdo_a_otros_botones(boton)
         else:
             # se le quita la propiedad border-left
-            boton.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'padding: 10px;') 
+            # ademas se le quita las negritas al boton desplegable padre (font-weight: 400;)
+            boton.setStyleSheet(
+                """
+                QPushButton {
+                    color: rgb(255, 255, 255);
+                    font-family: 'Montserrat';
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 16px;
+                    border: none;
+                    padding: 10px;
+                }
+            """
+            )
 
 
     def quitar_borde_izquierdo_a_otros_botones(self, boton_presionado):
@@ -190,8 +259,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.quitar_negritas_a_otros_botones(boton_desplegado_seleccionado)
 
         # se pone en negritas (bold) el texto del boton desplegado seleccionado
-        boton_desplegado_seleccionado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'font-weight: bold;')
-
+        # boton_desplegado_seleccionado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;' 'font-weight: bold;')
+        boton_desplegado_seleccionado.setStyleSheet(
+            """
+            QPushButton {
+                color: rgb(255, 255, 255);
+                font-family: 'Montserrat';
+                font-style: normal;
+                font-weight: bold;
+                font-size: 16px;
+                border: none;
+            }
+            """
+        )
         # se obtiene al boton desplegable padre del boton desplegado seleccionado
         boton_desplegable_padre = self.obtener_boton_desplegable_padre(boton_desplegado_seleccionado)
         # al boton desplegable padre se le agrega el borde izquierdo, mientras que a los otros se les quita 
@@ -200,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def quitar_negritas_a_otros_botones(self, boton_desplegado_seleccionado):
         """
-        Quita el atributo font-weight: bold; de una lista de botones desplegados que no sean el boton desplegado seleccionado que se recibe como parametro.
+        Modifica el atributo font-weight, asignandolo a font-weight: 400; (de modo que pierde el valor bold) de una lista de botones desplegados que no sean el boton desplegado seleccionado que se recibe como parametro.
         """
         # se obtienen las listas de botones desplegados del diccionario de relacion entre los botones desplegables padre y los botones desplegados hijos.
         listas_botones_desplegados = self.diccionario_relacion_botones_desplegables_y_desplegados.values()
@@ -210,8 +290,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # si el boton desplegado no es el boton desplegado seleccionado.
                 # aqui es importante usar el is y no el ==, porque el primero checa por referencia, mientras que el segundo checa por valor
                 if boton_desplegado is not boton_desplegado_seleccionado:
-                    # se les quita el font-weight
-                    boton_desplegado.setStyleSheet('color: rgb(255, 255, 255);' 'font: 75 12pt "Times New Roman";' 'border: none;')
+                    # se le modifica el font-weight a 400
+                    boton_desplegado.setStyleSheet(
+                        """
+                        QPushButton {
+                            color: rgb(255, 255, 255);
+                            font-family: 'Montserrat';
+                            font-style: normal;
+                            font-weight: 400;
+                            font-size: 16px;
+                            border: none;
+                        }
+                        """
+                    )
+
+    
+    def cambiar_pagina_al_seleccionar_opcion(self):
+        """
+        Cambia la pagina/pantalla del stack widget que contiene la informacion, graficas y/o estadisticas de la opcion seleccionada por el boton correspondiente.
+        """
+        # se obtiene al boton que mando la senial, como por ejemplo el boton de opcion Ventas totales diarias o el boton de opcion Empleados
+        boton_opcion_seleccionado = self.sender()
+        # se obtiene el valor (pagina correspondiente del boton de opciones seleccionado) del diccionario de la relacion entre botones de opciones y su pagina correspondiete
+        pagina_a_mostrar = self.relacion_botones_opciones_y_su_pagina_correspondiente.get(boton_opcion_seleccionado)
+        # al stacked widget se le asigna la pagina a mostrar que se haya elegido al presionar su boton de opciones,
+        # dando el efecto de que se cambio la pantalla
+        self.stacked_widget_paginas.setCurrentWidget(pagina_a_mostrar)
 
     
     def cerrar(self):
